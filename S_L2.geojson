@@ -1,0 +1,22 @@
+{
+"type": "FeatureCollection",
+"name": "S_L2",
+"crs": { "type": "name", "properties": { "name": "urn:ogc:def:crs:OGC:1.3:CRS84" } },
+"features": [
+{ "type": "Feature", "properties": { "id": null, "name": "Arrazi الرازي" }, "geometry": { "type": "Point", "coordinates": [ -6.812605010188705, 34.035465016764093 ] } },
+{ "type": "Feature", "properties": { "id": null, "name": "Bab Chellah باب شالة" }, "geometry": { "type": "Point", "coordinates": [ -6.834146010191162, 34.023654016764603 ] } },
+{ "type": "Feature", "properties": { "id": null, "name": "Bab El Had باب الحد" }, "geometry": { "type": "Point", "coordinates": [ -6.842943010190013, 34.020676016761442 ] } },
+{ "type": "Feature", "properties": { "id": null, "name": "Bab Lamrissa باب لمريسة" }, "geometry": { "type": "Point", "coordinates": [ -6.819391010189016, 34.032142016763515 ] } },
+{ "type": "Feature", "properties": { "id": null, "name": "Bettana بطانة" }, "geometry": { "type": "Point", "coordinates": [ -6.806677010192392, 34.034975016770758 ] } },
+{ "type": "Feature", "properties": { "id": null, "name": "Hassan II الحسن الثاني" }, "geometry": { "type": "Point", "coordinates": [ -6.799654010196442, 34.034671016778177 ] } },
+{ "type": "Feature", "properties": { "id": null, "name": "Hôpital Moulay Youssef" }, "geometry": { "type": "Point", "coordinates": [ -6.859117010193101, 34.010736016763794 ] } },
+{ "type": "Feature", "properties": { "id": null, "name": "Medina Rabat الرباط المدينة العتيقة" }, "geometry": { "type": "Point", "coordinates": [ -6.838854010190835, 34.02181301676336 ] } },
+{ "type": "Feature", "properties": { "id": null, "name": "Place Al Joulane L2" }, "geometry": { "type": "Point", "coordinates": [ -6.831389010198199, 34.018867016775992 ] } },
+{ "type": "Feature", "properties": { "id": null, "name": "Place de Russie ساحة روسيا" }, "geometry": { "type": "Point", "coordinates": [ -6.850003010188492, 34.018796016757967 ] } },
+{ "type": "Feature", "properties": { "id": null, "name": "Place du 16 Novembre ساحة 16 نونبر" }, "geometry": { "type": "Point", "coordinates": [ -6.825196010194303, 34.024996016770878 ] } },
+{ "type": "Feature", "properties": { "id": null, "name": "Pont Hassan II قنطرة الحسن الثاني" }, "geometry": { "type": "Point", "coordinates": [ -6.822163010195442, 34.025387016773102 ] } },
+{ "type": "Feature", "properties": { "id": null, "name": "Sidi Mohammed Ben Abdellah" }, "geometry": { "type": "Point", "coordinates": [ -6.854657010189138, 34.016144016758254 ] } },
+{ "type": "Feature", "properties": { "id": null, "name": "Tour Hassan" }, "geometry": { "type": "Point", "coordinates": [ -6.826619010200164, 34.019333016779804 ] } },
+{ "type": "Feature", "properties": { "id": null, "name": "Arrazi الرازي" }, "geometry": { "type": "Point", "coordinates": [ -6.81258101018868, 34.035496016764064 ] } }
+]
+}
