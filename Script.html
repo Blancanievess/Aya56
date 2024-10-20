@@ -36,7 +36,7 @@
         }
         #map {
             width: 80vw;
-            height: 50vh;
+            height: 70vh;
             margin: 0 auto;
             border: 2px solid #000000; 
             display: block; 
@@ -100,7 +100,6 @@
             border-radius: 8px; 
             margin-bottom: 0px; 
         }
-
         .leaflet-popup-content-wrapper {
             background-color:red;
             Opacity: 0.9;
@@ -180,7 +179,7 @@
 <div id="clock"></div>
 <h1>Carte interactive des régions du Maroc, du périmètre de l'IAV Hassan II et des réseaux du tram-way</h1>
     <p class="introduction">
-        L'objectif de cette carte est de visualiser l'organisation territoriale du Maroc, tout en soulignant les infrastructures importantes pour l'accès à l'éducation et à la mobilité urbaine. Vous pouvez explorer chaque région, zoomer sur l'institut, et naviguer entre les stations de tram pour mieux comprendre la connectivité et l'accessibilité dans la ville.
+        L'objectif de cette carte choroplèthe est de visualiser la densité de population, tout en soulignant les infrastructures importantes pour l'accès à l'éducation et à la mobilité urbaine. Vous pouvez explorer chaque région, zoomer sur l'institut, et naviguer entre les stations de tram pour mieux comprendre la connectivité et l'accessibilité dans la ville.
     </p>
 <div id="map"></div>
 <div class="content">
@@ -228,17 +227,6 @@
         maxZoom: 19,
         attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
     }).addTo(map);
-    var legend = L.control({ position: "bottomright" });
-    legend.onAdd = function (map) {
-    var div = L.DomUtil.create('div', 'legend');
-    div.innerHTML += '<h4>Légende:</h4>';
-    div.innerHTML += '<i style="background:white"></i><span>Ligne 1</span><br>';
-    div.innerHTML += '<i style="background:black"></i><span>Ligne 2</span><br>';
-    div.innerHTML += '<img src="S_L1.png" <span>Station tram L1</span><br>';
-    div.innerHTML += '<img src="S_L2.png" <span>Station tram L2</span><br>';
-    return div;
-    };
-    legend.addTo(map);
     var miniMap = new L.Control.MiniMap(L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
         maxZoom: 25
     }), {
@@ -314,9 +302,7 @@ const addMarkers = (data, icon) => {
     };
     addMarkers(S_L1, tramIcon1);
     addMarkers(S_L2, tramIcon2);
-
     map.addLayer(markers);
-
     map.on('zoom', function () {
         const zoomLevel = map.getZoom();
         const newIconSize = zoomLevel < 10 ? [15, 25] : zoomLevel < 15 ? [20, 35] : [25, 45];
@@ -326,14 +312,6 @@ const addMarkers = (data, icon) => {
             marker.setIcon(marker.options.icon);
         });
     });
-    function getRandomColor() {
-            var letters = '0123456789ABCDEF';
-            var color = '#';
-            for (var i = 0; i < 6; i++) {
-                color += letters[Math.floor(Math.random() * 16)];
-            }
-            return color;
-    }
 function style(feature) {
     if (feature.properties.Name === "L1") {
         return {
@@ -347,43 +325,110 @@ function style(feature) {
         };
     }
 }
-L.geoJSON(Maroc, {
-                    style: function (feature) {
-                        return {
-                            fillColor: getRandomColor(),  
-                            weight: 2,  
-                            opacity: 1,  
-                            color: 'green',  
-                            dashArray: '3', 
-                            fillOpacity: 0.3
-                        };
-                    },
-                    onEachFeature: function (feature, layer) {
-                        if (feature.properties && feature.properties.Nom_Region) {
-                            layer.bindPopup('<strong>' + feature.properties.Nom_Region+ '</strong>');
-                            layer.bindTooltip(feature.properties.CODE_REGIO, { permanent: true, direction: 'center'  ,className: 'custom-tooltip'});
-                        }
-                    }
-                }).addTo(map);
-                function adjustTooltipSize() {
-            var zoomLevel = map.getZoom();  
-            var fontSize = 5 + zoomLevel;  
-
-            var tooltips = document.querySelectorAll('.custom-tooltip');
-            tooltips.forEach(function (tooltip) {
-                tooltip.style.fontSize = fontSize + 'px';  
-                if (zoomLevel < 5) {
-                    tooltip.style.display = 'none'; 
-                } else {
-                    tooltip.style.display = 'block';  
-                }
+function getColor(population) {
+    return population > 6861739 ? '#00441b' :  
+           population > 4520569 ? '#006d2c' :  
+           population > 3556729 ? '#238b45' :  
+           population > 2520776 ? '#41ab5d' :  
+           population > 1635008 ? '#74c476' :  
+           population > 367758  ? '#c7e9c0' :
+                                   '#f7fcf5'; 
+}
+function highlightFeature(e) {
+    const layer = e.target;
+    layer.setStyle({
+        weight: 5,
+        color: '#006400',  
+        dashArray: '',
+        fillOpacity: 0.7
+    });
+    layer.bringToFront(); 
+    info.update(layer.feature.properties.Population); 
+}
+function resetHighlight(e) {
+    geojson.resetStyle(e.target); 
+    info.update();  
+}
+function zoomToFeature(e) {
+    map.fitBounds(e.target.getBounds());
+}
+var geojson = L.geoJSON(Maroc, {
+    style: function (feature) {
+        return {
+            fillColor: getColor(feature.properties.Population),  
+            weight: 2,  
+            opacity: 1,  
+            color: 'green',  
+            dashArray: '3', 
+            fillOpacity: 0.3
+        };
+    },
+    onEachFeature: function (feature, layer) {
+        if (feature.properties && feature.properties.Nom_Region) {
+            layer.bindPopup('<strong>' + feature.properties.Nom_Region + '</strong>');
+            layer.bindTooltip(feature.properties.CODE_REGIO, { permanent: true, direction: 'center', className: 'custom-tooltip' });
+            layer.on({
+                mouseover: highlightFeature,  
+                mouseout: resetHighlight, 
+                click: zoomToFeature 
             });
         }
-        map.on('zoom', adjustTooltipSize);
-        adjustTooltipSize();     
+    }
+}).addTo(map);
+function adjustTooltipSize() {
+    var zoomLevel = map.getZoom();  
+    var fontSize = 5 + zoomLevel;  
+
+    var tooltips = document.querySelectorAll('.custom-tooltip');
+    tooltips.forEach(function (tooltip) {
+        tooltip.style.fontSize = fontSize + 'px';  
+        tooltip.style.display = (zoomLevel < 5) ? 'none' : 'block';  
+    });
+}
+map.on('zoom', adjustTooltipSize);
+adjustTooltipSize();   
+const legende = L.control({ position: 'bottomright' });
+legende.onAdd = function (map) {
+    const div = L.DomUtil.create('div', 'info legend'); 
+    const grades = [0, 367758, 1635008, 2520776, 3556729, 4520569, 6861739]; 
+    const labels = [];
+    for (let i = 0; i < grades.length; i++) {
+        const from = grades[i];
+        const to = grades[i + 1];
+        if (to !== undefined) {
+            labels.push(
+                '<div style="background:' + getColor(from + 1) + '; width: 20px; height: 20px; display: inline-block; margin-right: 8px;"></div>' +
+                (from === 0 ? '0' : from) + (to ? '&ndash;' + to : '+')
+            );
+        }
+    }
+    div.innerHTML = labels.join('<br>'); 
+    return div;
+};
+legende.addTo(map);    
 L.geoJson(segment, {
     style: style
 }).addTo(map)
+function getRandomColor() {
+            var letters = '0123456789ABCDEF';
+            var color = '#';
+            for (var i = 0; i < 6; i++) {
+                color += letters[Math.floor(Math.random() * 16)];
+            }
+            return color;
+    }
+    var legend = L.control({ position: "bottomright" });
+    legend.onAdd = function (map) {
+    var div = L.DomUtil.create('div', 'legend');
+    div.innerHTML += '<h4>Légende:</h4>';
+    div.innerHTML += '<i style="background:white"></i><span>Ligne 1</span><br>';
+    div.innerHTML += '<i style="background:black"></i><span>Ligne 2</span><br>';
+    div.innerHTML += '<img src="S_L1.png" <span>Station tram L1</span><br>';
+    div.innerHTML += '<img src="S_L2.png" <span>Station tram L2</span><br>';
+    return div;
+    };
+    legend.addTo(map);
+   
 L.geoJSON(univ, {
                 style: function (feature) {
                         return {
