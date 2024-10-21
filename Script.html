@@ -159,26 +159,23 @@
     flex: 5; 
 } 
 .info {
-    background-color: rgba(255, 255, 255, 0.8); /* Couleur de fond légèrement transparente */
-    border-radius: 5px; /* Coins arrondis */
-    padding: 10px; /* Espace intérieur */
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.2); /* Ombre légère */
-    font-family: Arial, sans-serif; /* Police de caractères */
-    font-size: 14px; /* Taille de police */
-    color: #333; /* Couleur du texte */
+    background-color: rgba(255, 255, 255, 0.8); 
+    border-radius: 5px; 
+    padding: 10px; 
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.2); 
+    font-family: Arial, sans-serif; 
+    font-size: 14px; 
+    color: #333; 
 }
-
 .info h4 {
-    margin: 0 0 5px; /* Marges pour le titre */
-    font-size: 16px; /* Taille de police du titre */
-    color: #006400; /* Couleur du titre */
+    margin: 0 0 5px; 
+    font-size: 16px; 
+    color: #006400; 
 }
-
 .info b {
-    font-weight: bold; /* Mettre en gras les éléments */
-    color: #005700; /* Couleur des éléments en gras */
+    font-weight: bold; 
+    color: #005700; 
 }
-
 @import url('https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@500&display=swap');
 #clock {
     font-family: 'Roboto Mono', monospace; 
@@ -187,7 +184,7 @@
     color: white; 
     text-align: center;
     margin-top: 0px; 
-    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);*/
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
     letter-spacing: 2px; 
 }
     </style>
@@ -258,7 +255,6 @@
         toggleDisplay: true,
         minimized: false
     }).addTo(map);
-
     const redIcon = L.icon({
         iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-red.png',
         iconSize: [25, 41],
@@ -357,7 +353,6 @@ function getColor(population) {
            population > 367758  ? '#c7e9c0' :
                                    '#f7fcf5'; 
 }
-
 function highlightFeature(e) {
     const layer = e.target;
     layer.setStyle({
@@ -370,24 +365,19 @@ function highlightFeature(e) {
     layer.bringToFront(); 
     info.update(layer.feature.properties); 
 }
-
 function resetHighlight(e) {
     geojson.resetStyle(e.target); 
     info.update();  
 }
-
 function zoomToFeature(e) {
     map.fitBounds(e.target.getBounds());
 }
-
 const info = L.control();
-
 info.onAdd = function (map) {
     this._div = L.DomUtil.create('div', 'info');
-    this.update(); // Mettre à jour le contenu par défaut
+    this.update();
     return this._div;
 }
-
 info.update = function (props) {
     this._div.innerHTML = '<h4>Informations sur la région</h4>' + (props ?
         '<b>' + props.Nom_Region + '</b><br />' +
@@ -397,9 +387,7 @@ info.update = function (props) {
         'Marocains: ' + props.Marocains + '<br />' :
         'Survoler une région');
 }
-
 info.addTo(map);
-
 var geojson = L.geoJSON(Maroc, {
     style: function (feature) {
         return {
@@ -424,26 +412,22 @@ var geojson = L.geoJSON(Maroc, {
         }
     }
 }).addTo(map);
-
 function adjustTooltipSize() {
     var zoomLevel = map.getZoom();  
     var fontSize = 5 + zoomLevel;  
-
     var tooltips = document.querySelectorAll('.custom-tooltip');
     tooltips.forEach(function (tooltip) {
         tooltip.style.fontSize = fontSize + 'px';  
         tooltip.style.display = (zoomLevel < 5) ? 'none' : 'block';  
     });
 }
-
 map.on('zoom', adjustTooltipSize);
 adjustTooltipSize();   
-
 function createLegend() {
     const div = L.DomUtil.create('div', 'info legend'); 
     const grades = [0, 367758, 1635008, 2520776, 3556729, 4520569, 6861739]; 
     const labels = [];
-
+    div.innerHTML = '<h4>Population:</h4>';
     for (let i = 0; i < grades.length; i++) {
         const from = grades[i];
         const to = grades[i + 1];
@@ -454,19 +438,15 @@ function createLegend() {
             );
         }
     }
-    
-    div.innerHTML = labels.join('<br>'); 
+    div.innerHTML += labels.join('<br>'); 
     return div;
 }
-
 const legend = L.control({ position: 'bottomright' });
 legend.onAdd = createLegend;
 legend.addTo(map); 
-
 L.geoJson(segment, {
     style: style
 }).addTo(map);
-
 function getRandomColor() {
     var letters = '0123456789ABCDEF';
     var color = '#';
@@ -475,7 +455,6 @@ function getRandomColor() {
     }
     return color;
 }
-
 const tramLegend = L.control({ position: "bottomright" });
 tramLegend.onAdd = function (map) {
     var div = L.DomUtil.create('div', 'legend');
@@ -486,9 +465,7 @@ tramLegend.onAdd = function (map) {
     div.innerHTML += '<img src="S_L2.png" alt="Station tram L2" style="width: 20px; height: 20px;"> <span>Station tram L2</span><br>';
     return div;
 };
-
 tramLegend.addTo(map);
-
 L.geoJSON(univ, {
                 style: function (feature) {
                         return {
