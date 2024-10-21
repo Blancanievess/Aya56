@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -21,6 +22,7 @@
     <script src="S_L1.geojson"></script>
     <script src="S_L2.geojson"></script>
     <script src="segment.geojson"></script>
+    <audio id="audio-player" src="IAV.mp3" preload="auto"></audio>
     <style>
         html, body {
             height: 100%;
@@ -262,8 +264,34 @@
         popupAnchor: [1, -34],
     });
     const marker = L.marker([33.976618102794625, -6.866707261151313], { icon: redIcon })
-        .addTo(map)
-        .bindPopup('<div class="popup-content"> <b>Salut!</b><br/> C\'est l\'IAV.</div>');
+    .addTo(map)
+    .bindPopup(`
+        <div class="popup-content">
+            <b>Salut!</b><br/> 
+            C'est l'IAV.<br/>
+            <b>Écouter l'audio</b><br/>
+            <button id="play-audio">Jouer l'audio</button>
+            <button id="stop-audio">Stopper l'audio</button>
+        </div>
+    `);
+
+marker.on('popupopen', function() {
+    const audioPlayer = document.getElementById('audio-player');
+    
+    // Écouter le clic sur le bouton "Jouer"
+    const playButton = document.getElementById('play-audio');
+    playButton.onclick = function() {
+        audioPlayer.play();
+    };
+
+    // Écouter le clic sur le bouton "Stopper"
+    const stopButton = document.getElementById('stop-audio');
+    stopButton.onclick = function() {
+        audioPlayer.pause(); // Mettre l'audio en pause
+        audioPlayer.currentTime = 0; // Réinitialiser la position à 0 si désiré
+    };
+});
+
     function onMapClick(e) {
             map.setView(e.latlng, 15); 
             const popup = L.popup()
@@ -357,10 +385,10 @@ function highlightFeature(e) {
     const layer = e.target;
     layer.setStyle({
         weight: 5,
-        color: '#006400',  
+        color: '#006400',
         dashArray: '',
         fillOpacity: 0.7
-    }); 
+    });
     info.update(layer.feature.properties); 
 }
 function resetHighlight(e) {
