@@ -36,7 +36,7 @@
         }
         #map {
             width: 80vw;
-            height: 70vh;
+            height: 80vh;
             margin: 0 auto;
             border: 2px solid #000000; 
             display: block; 
@@ -61,7 +61,7 @@
             padding: 20px;                
         }
         .legend {
-            background-color: rgb(192, 192, 192);
+            background-color: rgba(255, 255, 255, 0.8);
             padding: 25px;
             line-height: 20px;
             color: #333;
@@ -158,6 +158,27 @@
     margin: 20;
     flex: 5; 
 } 
+.info {
+    background-color: rgba(255, 255, 255, 0.8); /* Couleur de fond légèrement transparente */
+    border-radius: 5px; /* Coins arrondis */
+    padding: 10px; /* Espace intérieur */
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.2); /* Ombre légère */
+    font-family: Arial, sans-serif; /* Police de caractères */
+    font-size: 14px; /* Taille de police */
+    color: #333; /* Couleur du texte */
+}
+
+.info h4 {
+    margin: 0 0 5px; /* Marges pour le titre */
+    font-size: 16px; /* Taille de police du titre */
+    color: #006400; /* Couleur du titre */
+}
+
+.info b {
+    font-weight: bold; /* Mettre en gras les éléments */
+    color: #005700; /* Couleur des éléments en gras */
+}
+
 @import url('https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@500&display=swap');
 #clock {
     font-family: 'Roboto Mono', monospace; 
@@ -237,7 +258,6 @@
         toggleDisplay: true,
         minimized: false
     }).addTo(map);
-
     const redIcon = L.icon({
         iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-red.png',
         iconSize: [25, 41],
@@ -328,11 +348,11 @@ function style(feature) {
     }
 }
 function getColor(population) {
-    return population > 6861739 ? '#00441b' :  
-           population > 4520569 ? '#006d2c' :  
-           population > 3556729 ? '#238b45' :  
-           population > 2520776 ? '#41ab5d' :  
-           population > 1635008 ? '#74c476' :  
+    return population > 6861739 ? '#00441b' :
+           population > 4520569 ? '#006d2c' :
+           population > 3556729 ? '#238b45' :
+           population > 2520776 ? '#41ab5d' :
+           population > 1635008 ? '#74c476' :
            population > 367758  ? '#c7e9c0' :
                                    '#f7fcf5'; 
 }
@@ -344,9 +364,8 @@ function highlightFeature(e) {
         dashArray: '',
         fillOpacity: 0.7
     });
-
     layer.bringToFront(); 
-    info.update(layer.feature.properties.Population); 
+    info.update(layer.feature.properties); 
 }
 function resetHighlight(e) {
     geojson.resetStyle(e.target); 
@@ -355,7 +374,22 @@ function resetHighlight(e) {
 function zoomToFeature(e) {
     map.fitBounds(e.target.getBounds());
 }
-
+const info = L.control();
+info.onAdd = function (map) {
+    this._div = L.DomUtil.create('div', 'info');
+    this.update(); // Mettre à jour le contenu par défaut
+    return this._div;
+}
+info.update = function (props) {
+    this._div.innerHTML = '<h4>Informations sur la région</h4>' + (props ?
+        '<b>' + props.Nom_Region + '</b><br />' +
+        'Population: ' + props.Population + '<br />' +
+        'Menages: ' + props.Menages + '<br />' +
+        'Etrangers: ' + props.Etrangers + '<br />' +
+        'Marocains: ' + props.Marocains + '<br />' :
+        'Survoler une région');
+}
+info.addTo(map);
 var geojson = L.geoJSON(Maroc, {
     style: function (feature) {
         return {
@@ -371,6 +405,7 @@ var geojson = L.geoJSON(Maroc, {
         if (feature.properties && feature.properties.Nom_Region) {
             layer.bindPopup('<strong>' + feature.properties.Nom_Region + '</strong>');
             layer.bindTooltip(feature.properties.CODE_REGIO, { permanent: true, direction: 'center', className: 'custom-tooltip' });
+            info.update(feature.properties);
             layer.on({
                 mouseover: highlightFeature,  
                 mouseout: resetHighlight, 
@@ -391,8 +426,8 @@ function adjustTooltipSize() {
 }
 map.on('zoom', adjustTooltipSize);
 adjustTooltipSize();   
-const legende = L.control({ position: 'bottomright' });
-legende.onAdd = function (map) {
+
+function createLegend() {
     const div = L.DomUtil.create('div', 'info legend'); 
     const grades = [0, 367758, 1635008, 2520776, 3556729, 4520569, 6861739]; 
     const labels = [];
@@ -406,33 +441,37 @@ legende.onAdd = function (map) {
             );
         }
     }
+ 
     div.innerHTML = labels.join('<br>'); 
     return div;
-};
-legende.addTo(map);    
+}
+const legend = L.control({ position: 'bottomright' });
+legend.onAdd = createLegend;
+legend.addTo(map); 
+
 L.geoJson(segment, {
     style: style
-}).addTo(map)
+}).addTo(map);
+
 function getRandomColor() {
-            var letters = '0123456789ABCDEF';
-            var color = '#';
-            for (var i = 0; i < 6; i++) {
-                color += letters[Math.floor(Math.random() * 16)];
-            }
-            return color;
+    var letters = '0123456789ABCDEF';
+    var color = '#';
+    for (var i = 0; i < 6; i++) {
+        color += letters[Math.floor(Math.random() * 16)];
     }
-    var legend = L.control({ position: "bottomright" });
-    legend.onAdd = function (map) {
+    return color;
+}
+const tramLegend = L.control({ position: "bottomright" });
+tramLegend.onAdd = function (map) {
     var div = L.DomUtil.create('div', 'legend');
     div.innerHTML += '<h4>Légende:</h4>';
     div.innerHTML += '<i style="background:white"></i><span>Ligne 1</span><br>';
     div.innerHTML += '<i style="background:black"></i><span>Ligne 2</span><br>';
-    div.innerHTML += '<img src="S_L1.png" <span>Station tram L1</span><br>';
-    div.innerHTML += '<img src="S_L2.png" <span>Station tram L2</span><br>';
+    div.innerHTML += '<img src="S_L1.png" alt="Station tram L1" style="width: 20px; height: 20px;"> <span>Station tram L1</span><br>';
+    div.innerHTML += '<img src="S_L2.png" alt="Station tram L2" style="width: 20px; height: 20px;"> <span>Station tram L2</span><br>';
     return div;
-    };
-    legend.addTo(map);
-   
+};
+tramLegend.addTo(map);
 L.geoJSON(univ, {
                 style: function (feature) {
                         return {
